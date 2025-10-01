@@ -20,3 +20,24 @@ def is_configuration_json_valid(json_path: str) -> bool:
         return True
     except Exception:
         return False
+
+def print_wizard_title(message: str) -> None:
+    """ Prints the given message in the standard output using a bold and blue font
+    """
+    print(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}{message}{TerminalColors.ENDC}')
+    print()
+
+def print_wizard_message(message: str) -> None:
+    """ Prints the given message in the standard output using a blue font
+    """
+    print(f'{TerminalColors.OKBLUE}{message}{TerminalColors.ENDC}')
+
+def print_wizard_success(message: str) -> None:
+    """ Prints the given message in the standard output using a green font
+    """
+    print()
+    print(f'{TerminalColors.BOLD}{TerminalColors.OKGREEN}{message}{TerminalColors.ENDC}')
+
+def get_wizard_input(message: str) -> str:
+    value = input(f'- {TerminalColors.OKBLUE}{message}{TerminalColors.ENDC}: ')
+    return value

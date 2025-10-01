@@ -11,20 +11,27 @@ class SchemaItem:
     pass
 
 class SchemaItem:
+    """ Class that parses the JSON and exposes its attributes
+    """
     def __init__(self, item_dict: dict):
         self.__name = item_dict.get('name')
-        self.__type = item_dict.get('type')
+        self.__type = ItemType(item_dict.get('type'))
         self.__is_mandatory = item_dict.get('is_mandatory')
         self.__prompt = item_dict.get('prompt')
 
         self.__fields = []
-        if self.__type == ItemType.OBJECT.value:
+        if self.__type is ItemType.OBJECT:
             for field_dict in item_dict.get('fields'):
                 self.__fields.append(SchemaItem(field_dict))
 
         self.__items = None
-        if self.__type == ItemType.ARRAY.value:
-            self.__items = SchemaItem(item_dict.get('items'))
+        if self.__type is ItemType.ARRAY:
+            # FIXME iterate on items
+            self.__items.append(SchemaItem(item_dict.get('items')))
+
+        self.__number_of_items = None
+        if self.__type is ItemType.ARRAY and item_dict.get('number'):
+            self.__number_of_items = item_dict.get('number')
 
     @property
     def name(self) -> str:
@@ -40,15 +47,22 @@ class SchemaItem:
 
     @property
     def prompt(self) -> str:
-        return self.__prompt
+        if self.__prompt:
+            return self.__prompt
+        else:
+            return self.name
 
     @property
     def fields(self) -> list:
         return self.__fields
 
     @property
-    def items(self) -> SchemaItem:
+    def items(self) -> list:
         return self.__items
+
+    @property
+    def number_of_items(self) -> int:
+        return self.__number_of_items
 
     def __repr__(self) -> str:
         obj_dict = {
@@ -82,7 +96,7 @@ class Schema:
         return self.__json_path
 
     @property
-    def items(self) -> list:
+    def items(self) -> list[SchemaItem]:
         return self.__items
 
     def __load_schema(self):

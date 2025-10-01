@@ -25,7 +25,8 @@ if __name__ == '__main__':
         print(f"{TerminalColors.WARNING}[WARNING] Destination JSON path not provided; using the default one ('result.json' in the current directory).{TerminalColors.ENDC}")
         destination_json_path = os.path.join(os.getcwd(), 'result.json')
 
-    try:
-        schema = Schema(json_path=configuration_json_path)
-    except Exception as e:
-        print(f'{TerminalColors.FAIL}[ERROR] {e}{TerminalColors.ENDC}')
+    schema = Schema(json_path=configuration_json_path)
+    wizard = Wizard(schema)
+    wizard.start()
+    with open(destination_json_path, 'w+') as file_writer:
+        file_writer.write(json.dumps(wizard.result))

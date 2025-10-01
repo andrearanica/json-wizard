@@ -16,19 +16,11 @@ The configuration JSON is the file that contains a description of the fields tha
 can have.
 
 ``` json
-{
-    "types": [
-
-    ]
-}
-```
-
-``` json
 [
     {
         "name": "title",
         "type": "string",
-        "mandatory": true,
+        "is_mandatory": true,
         "prompt": "Insert the title of the project:"
     },
     {
@@ -41,22 +33,22 @@ can have.
                 {
                     "name": "name",
                     "type": "string",
-                    "mandatory": true
+                    "is_mandatory": true
                 },
                 {
                     "name": "surname",
                     "type": "string",
-                    "mandatory": true
+                    "is_mandatory": true
                 },
                 {
                     "name": "age",
                     "type": "integer",
-                    "mandatory": true
+                    "is_mandatory": true
                 },
                 {
                     "name": "pets",
                     "type": "array",
-                    "mandatory": true,
+                    "is_mandatory": true,
                     "items": {
                         "type": "string",
                         "prompt": "Animal name:"
