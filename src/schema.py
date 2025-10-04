@@ -28,10 +28,6 @@ class SchemaItem:
         if self.__type is ItemType.ARRAY:
             self.__items = SchemaItem(item_dict.get('items'))
 
-        self.__number_of_items = None
-        if self.__type is ItemType.ARRAY and item_dict.get('number'):
-            self.__number_of_items = item_dict.get('number')
-
     @property
     def name(self) -> str:
         return self.__name
@@ -59,10 +55,6 @@ class SchemaItem:
     def items(self) -> ItemType:
         return self.__items
 
-    @property
-    def number_of_items(self) -> int:
-        return self.__number_of_items
-
     def __repr__(self) -> str:
         obj_dict = {
             'name': self.__name,
@@ -87,7 +79,8 @@ class SchemaItem:
 class Schema:
     def __init__(self, json_path: dict):
         self.__json_path = json_path
-        self.__items = []
+        self.__items = {}
+        self.__root = None
         self.__load_schema()
 
     @property
@@ -95,8 +88,8 @@ class Schema:
         return self.__json_path
 
     @property
-    def items(self) -> list[SchemaItem]:
-        return self.__items
+    def root(self) -> SchemaItem:
+        return self.__root
 
     def __load_schema(self):
         """ Initialises the instance of the schema by loading the JSON file
@@ -104,11 +97,5 @@ class Schema:
         with open(self.__json_path, 'r+') as file_reader:
             json_content = json.loads(file_reader.read())
 
-        if type(json_content) is dict:
-            error = 'The configuration JSON must contain an array of elements, not a dict'
-            raise RuntimeError(error)
-
-        self.__items = []
-        for item_dict in json_content:
-            item_obj = SchemaItem(item_dict)
-            self.__items.append(item_obj)
+        item_obj = SchemaItem(json_content)
+        self.__root = item_obj

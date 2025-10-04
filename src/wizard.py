@@ -23,12 +23,11 @@ class Wizard:
 
         print_wizard_title(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}**** Welcome to the JSON Wizard! 🪄 ​****{TerminalColors.ENDC}')
 
-        for item in self.schema.items:
-            self.__wizard_on_item(item, self.__result)
+        self.__result = self.__execute_wizard(self.schema.root)
 
         print_wizard_success(f'The JSON file has been succesfully created!')
     
-    def __wizard_on_item(self, item: SchemaItem, result: dict):
+    def __execute_wizard(self, item: SchemaItem):
         """ Asks the user to compile the given item
         """
         if item.type in [ItemType.STRING, ItemType.NUMERIC]:
@@ -38,28 +37,30 @@ class Wizard:
                 return
 
             while not item_value and item.is_mandatory:
-                item_value = get_wizard_input(item.prompt)
+                if item.type is ItemType.NUMERIC:
+                    if item_value.isnumeric():
+                        item_value = float(item_value)
+                else:
+                    item_value = get_wizard_input(item.prompt)
 
-            if item.type is ItemType.NUMERIC:
-                if not item_value.isnumeric():
-                    raise RuntimeError(f'\'{item.name}\' is a numeric item, but \'{item_value}\' cannot be converted to a numeric value')
-                item_value = float(item_value)
-            
-            if isinstance(result, dict):
-                result[item.name] = item_value
-            elif isinstance(result, list):
-                result.append(item_value)
+            return item_value
+
         elif item.type is ItemType.OBJECT:
+            obj = {}
             for field in item.fields:
-                self.__wizard_on_item(field, result)
+                field_value = self.__execute_wizard(field)
+                if field_value is not None:
+                    obj[field.name] = field_value
+            return obj
+
         elif item.type is ItemType.ARRAY:
-            result[item.name] = []
-            i = 0
+            array = []
             wants_to_continue = True
             while wants_to_continue:
-                result[item.name].append({})
-                self.__wizard_on_item(item.items, result[item.name][i])
-                i += 1
+                new_item = self.__execute_wizard(item.items)
+                if new_item is not None:
+                    array.append(new_item)
 
                 wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/N)')
                 wants_to_continue = wants_to_continue_raw.upper() == 'Y'
+            return array
