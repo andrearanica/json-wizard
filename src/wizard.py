@@ -50,15 +50,15 @@ class Wizard:
             elif isinstance(result, list):
                 result.append(item_value)
         elif item.type is ItemType.OBJECT:
-            result[item.name] = {}
             for field in item.fields:
-                self.__wizard_on_item(field, result[item.name])
+                self.__wizard_on_item(field, result)
         elif item.type is ItemType.ARRAY:
             result[item.name] = []
             i = 0
             wants_to_continue = True
             while wants_to_continue:
-                self.__wizard_on_item(item.items, result[item.name])
+                result[item.name].append({})
+                self.__wizard_on_item(item.items, result[item.name][i])
                 i += 1
 
                 wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/N)')

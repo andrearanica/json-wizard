@@ -42,7 +42,7 @@ can have.
                 },
                 {
                     "name": "age",
-                    "type": "integer",
+                    "type": "numeric",
                     "is_mandatory": true
                 },
                 {
