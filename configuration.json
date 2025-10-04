@@ -8,7 +8,6 @@
     {
         "name": "people",
         "type": "array",
-        "prompt": "--- Inserting people ---",
         "items": {
             "type": "object",
             "fields": [
@@ -32,6 +31,7 @@
                     "type": "array",
                     "is_mandatory": true,
                     "items": {
+                        "name": "animal_name",
                         "type": "string",
                         "prompt": "Animal name:"
                     }

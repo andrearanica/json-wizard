@@ -26,8 +26,7 @@ class SchemaItem:
 
         self.__items = None
         if self.__type is ItemType.ARRAY:
-            # FIXME iterate on items
-            self.__items.append(SchemaItem(item_dict.get('items')))
+            self.__items = SchemaItem(item_dict.get('items'))
 
         self.__number_of_items = None
         if self.__type is ItemType.ARRAY and item_dict.get('number'):
@@ -57,7 +56,7 @@ class SchemaItem:
         return self.__fields
 
     @property
-    def items(self) -> list:
+    def items(self) -> ItemType:
         return self.__items
 
     @property

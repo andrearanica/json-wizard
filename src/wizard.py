@@ -21,7 +21,6 @@ class Wizard:
         if self.__result != {}:
             raise RuntimeError(f"The wizard has already been executed!")
 
-        os.system('clear')
         print_wizard_title(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}**** Welcome to the JSON Wizard! 🪄 ​****{TerminalColors.ENDC}')
 
         for item in self.schema.items:
@@ -46,13 +45,21 @@ class Wizard:
                     raise RuntimeError(f'\'{item.name}\' is a numeric item, but \'{item_value}\' cannot be converted to a numeric value')
                 item_value = float(item_value)
             
-            result[item.name] = item_value
+            if isinstance(result, dict):
+                result[item.name] = item_value
+            elif isinstance(result, list):
+                result.append(item_value)
         elif item.type is ItemType.OBJECT:
             result[item.name] = {}
             for field in item.fields:
                 self.__wizard_on_item(field, result[item.name])
         elif item.type is ItemType.ARRAY:
             result[item.name] = []
-            for i, item in enumerate(item.items):
-                result[item.name][i] = None
-                self.__wizard_on_item(item, result[item.name][i])
+            i = 0
+            wants_to_continue = True
+            while wants_to_continue:
+                self.__wizard_on_item(item.items, result[item.name])
+                i += 1
+
+                wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/N)')
+                wants_to_continue = wants_to_continue_raw.upper() == 'Y'

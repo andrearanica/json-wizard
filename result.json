@@ -1,1 +1,7 @@
-{"title": "titolo", "teacher": {"name": "nome ", "surname": "cognome"}}
+{
+    "title": "titolo",
+    "people": [
+        "nome",
+        "nome"
+    ]
+}

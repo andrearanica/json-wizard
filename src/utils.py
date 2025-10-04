@@ -1,5 +1,7 @@
 import json
 
+from .schema import ItemType
+
 class TerminalColors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -41,3 +43,9 @@ def print_wizard_success(message: str) -> None:
 def get_wizard_input(message: str) -> str:
     value = input(f'- {TerminalColors.OKBLUE}{message}{TerminalColors.ENDC}: ')
     return value
+
+def print_wizard_warning(message: str) -> None:
+    print(f"{TerminalColors.WARNING}[WARNING] {message}{TerminalColors.ENDC}")
+
+def print_wizard_error(message: str) -> None:
+    print(f"{TerminalColors.FAIL}[ERROR] {message}{TerminalColors.ENDC}")
