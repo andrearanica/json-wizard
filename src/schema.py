@@ -6,9 +6,12 @@ class ItemType(Enum):
     NUMERIC = 'numeric'
     ARRAY = 'array'
     OBJECT = 'object'
+    MAP = 'map'
+
 
 class SchemaItem:
     pass
+
 
 class SchemaItem:
     """ Class that parses the JSON and exposes its attributes
@@ -25,7 +28,7 @@ class SchemaItem:
                 self.__fields.append(SchemaItem(field_dict))
 
         self.__items = None
-        if self.__type is ItemType.ARRAY:
+        if self.__type in [ItemType.ARRAY, ItemType.MAP]:
             self.__items = SchemaItem(item_dict.get('items'))
 
     @property
@@ -79,7 +82,6 @@ class SchemaItem:
 class Schema:
     def __init__(self, json_path: dict):
         self.__json_path = json_path
-        self.__items = {}
         self.__root = None
         self.__load_schema()
 

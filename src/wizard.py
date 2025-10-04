@@ -21,7 +21,7 @@ class Wizard:
         if self.__result != {}:
             raise RuntimeError(f"The wizard has already been executed!")
 
-        print_wizard_title(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}**** Welcome to the JSON Wizard! 🪄 ​****{TerminalColors.ENDC}')
+        print_wizard_title(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}**** Welcome to the JSON Wizard! 🪄  ​****{TerminalColors.ENDC}')
 
         self.__result = self.__execute_wizard(self.schema.root)
 
@@ -31,17 +31,23 @@ class Wizard:
         """ Asks the user to compile the given item
         """
         if item.type in [ItemType.STRING, ItemType.NUMERIC]:
-            item_value = get_wizard_input(item.prompt)
+            while True:
+                item_value = get_wizard_input(item.prompt)
 
-            if not item_value and not item.is_mandatory:
-                return
+                if not item_value and not item.is_mandatory:
+                    break
 
-            while not item_value and item.is_mandatory:
                 if item.type is ItemType.NUMERIC:
                     if item_value.isnumeric():
                         item_value = float(item_value)
-                else:
-                    item_value = get_wizard_input(item.prompt)
+                    else:
+                        print_wizard_warning(f'\'{item_value}\' is not valid for a numeric field')
+                        item_value = None
+
+                if item_value:
+                    break
+
+                print_wizard_warning(f'This field is mandatory: please insert a value')
 
             return item_value
 
@@ -57,10 +63,17 @@ class Wizard:
             array = []
             wants_to_continue = True
             while wants_to_continue:
+                new_item = None
                 new_item = self.__execute_wizard(item.items)
                 if new_item is not None:
                     array.append(new_item)
 
-                wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/N)')
-                wants_to_continue = wants_to_continue_raw.upper() == 'Y'
+                wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/n)')
+                wants_to_continue = not wants_to_continue_raw.upper() == 'N'
             return array
+
+        elif item.type is ItemType.MAP:
+            map_obj = {}
+            item_key = get_wizard_input(item.prompt)
+            map_obj[item_key] = self.__execute_wizard(item.items)
+            return map_obj
