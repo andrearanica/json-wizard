@@ -28,8 +28,14 @@ class SchemaItem:
                 self.__fields.append(SchemaItem(field_dict))
 
         self.__items = None
+        self.__items_number = None
         if self.__type in [ItemType.ARRAY, ItemType.MAP]:
             self.__items = SchemaItem(item_dict.get('items'))
+            if items_number := item_dict.get('number_of_items'):
+                if items_number <= 0:
+                    raise RuntimeError('Items number must have a positive '
+                                       f'value, not \'{items_number}\'')
+                self.__items_number = items_number
 
     @property
     def name(self) -> str:
@@ -57,6 +63,10 @@ class SchemaItem:
     @property
     def items(self) -> ItemType:
         return self.__items
+
+    @property
+    def items_number(self) -> int:
+        return self.__items_number
 
     def __repr__(self) -> str:
         obj_dict = {

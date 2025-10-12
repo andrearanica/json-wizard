@@ -21,7 +21,7 @@ class Wizard:
         if self.__result != {}:
             raise RuntimeError(f"The wizard has already been executed!")
 
-        print_wizard_title(f'{TerminalColors.BOLD}{TerminalColors.OKBLUE}**** Welcome to the JSON Wizard! 🪄  ​****{TerminalColors.ENDC}')
+        print_wizard_title(f'**** Welcome to the JSON Wizard! 🪄  ​****')
 
         self.__result = self.__execute_wizard(self.schema.root)
 
@@ -41,13 +41,15 @@ class Wizard:
                     if item_value.isnumeric():
                         item_value = float(item_value)
                     else:
-                        print_wizard_warning(f'\'{item_value}\' is not valid for a numeric field')
+                        print_wizard_warning(f'\'{item_value}\' is not valid '
+                                              ' for a numeric field')
                         item_value = None
 
                 if item_value:
                     break
 
-                print_wizard_warning(f'This field is mandatory: please insert a value')
+                print_wizard_warning(f'This field is mandatory: please insert '
+                                      ' a value')
 
             return item_value
 
@@ -68,12 +70,34 @@ class Wizard:
                 if new_item is not None:
                     array.append(new_item)
 
-                wants_to_continue_raw = get_wizard_input(f'Add another item for \'{item.name}\'? (Y/n)')
+                wants_to_continue_raw = get_wizard_input('Add another item '
+                                                         'for \'{item.name}\'?'
+                                                         ' (Y/n)')
                 wants_to_continue = not wants_to_continue_raw.upper() == 'N'
             return array
 
         elif item.type is ItemType.MAP:
             map_obj = {}
-            item_key = get_wizard_input(item.prompt)
-            map_obj[item_key] = self.__execute_wizard(item.items)
+            i = 1
+            wants_to_continue = True
+            while wants_to_continue:
+                item_key = get_wizard_input(item.prompt)
+                if map_obj.get(item_key) is not None:
+                    print_wizard_warning(f'The key \'{item_key}\' has '
+                                            'already been used; it will be '
+                                            'overwritten with the new value '
+                                            'you will insert now.')
+                if not item_key:
+                    print_wizard_warning(f'Please insert a valid key')
+                    continue
+
+                map_obj[item_key] = self.__execute_wizard(item.items)
+
+                if item.items_number is not None:
+                    wants_to_continue = i < item.items_number
+                    i += 1
+                else:
+                    wants_to_continue = get_wizard_input('Add another item for '
+                                                         f'\'{item.name}\'? '
+                                                         '(Y/n)').upper() != 'N'
             return map_obj
