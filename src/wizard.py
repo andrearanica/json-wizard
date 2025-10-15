@@ -1,5 +1,4 @@
-import os
-from .schema import Schema, SchemaItem, ItemType
+from .schema import *
 from .utils import *
 
 class Wizard:
@@ -30,14 +29,14 @@ class Wizard:
     def __execute_wizard(self, item: SchemaItem):
         """ Asks the user to compile the given item
         """
-        if item.type in [ItemType.STRING, ItemType.NUMERIC]:
+        if isinstance(item, StringSchemaItem) or isinstance(item, NumericSchemaItem):
             while True:
                 item_value = get_wizard_input(item.prompt)
 
                 if not item_value and not item.is_mandatory:
                     break
 
-                if item.type is ItemType.NUMERIC:
+                if isinstance(item, NumericSchemaItem):
                     if item_value.isnumeric():
                         item_value = float(item_value)
                     else:
@@ -53,7 +52,7 @@ class Wizard:
 
             return item_value
 
-        elif item.type is ItemType.OBJECT:
+        elif isinstance(item, ObjectSchemaItem):
             obj = {}
             for field in item.fields:
                 field_value = self.__execute_wizard(field)
@@ -61,7 +60,7 @@ class Wizard:
                     obj[field.name] = field_value
             return obj
 
-        elif item.type is ItemType.ARRAY:
+        elif isinstance(item, ArraySchemaItem):
             array = []
             wants_to_continue = True
             while wants_to_continue:
@@ -71,12 +70,12 @@ class Wizard:
                     array.append(new_item)
 
                 wants_to_continue_raw = get_wizard_input('Add another item '
-                                                         'for \'{item.name}\'?'
+                                                         f'for \'{item.name}\'?'
                                                          ' (Y/n)')
                 wants_to_continue = not wants_to_continue_raw.upper() == 'N'
             return array
 
-        elif item.type is ItemType.MAP:
+        elif isinstance(item, MapSchemaItem):
             map_obj = {}
             i = 1
             wants_to_continue = True
