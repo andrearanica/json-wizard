@@ -1,3 +1,4 @@
+import re
 from .schema import *
 from .utils import *
 
@@ -36,12 +37,18 @@ class Wizard:
                 if not item_value and not item.is_mandatory:
                     break
 
+                if isinstance(item, StringSchemaItem) and item.pattern:
+                    if not re.match(item.pattern, item_value):
+                        print_wizard_warning(f'The value \'{item_value}\' does not match the '
+                                             f'pattern \'{item.pattern}\'')
+                        continue
+
                 if isinstance(item, NumericSchemaItem):
                     if item_value.isnumeric():
                         item_value = float(item_value)
                     else:
-                        print_wizard_warning(f'\'{item_value}\' is not valid '
-                                              ' for a numeric field')
+                        print_wizard_warning(f'\'{item_value}\' is not valid value'
+                                             'for a numeric field')
                         item_value = None
 
                 if item_value:
@@ -64,7 +71,6 @@ class Wizard:
             array = []
             wants_to_continue = True
             while wants_to_continue:
-                new_item = None
                 new_item = self.__execute_wizard(item.items)
                 if new_item is not None:
                     array.append(new_item)
@@ -83,16 +89,13 @@ class Wizard:
                 item_key = get_wizard_input(item.prompt)
                 if map_obj.get(item_key) is not None:
                     print_wizard_warning(f'The key \'{item_key}\' has '
-                                            'already been used; it will be '
-                                            'overwritten with the new value '
-                                            'you will insert now.')
-                if not item_key:
-                    print_wizard_warning(f'Please insert a valid key')
-                    continue
+                                          'already been used; it will be '
+                                          'overwritten with the new value '
+                                          'you will insert now.')
+                if item_key:
+                    map_obj[item_key] = self.__execute_wizard(item.items)
 
-                map_obj[item_key] = self.__execute_wizard(item.items)
-
-                if item.items_number is not None:
+                if item_key and item.items_number is not None:
                     wants_to_continue = i < item.items_number
                     i += 1
                 else:

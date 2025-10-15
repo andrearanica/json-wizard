@@ -18,7 +18,7 @@ class SchemaItem:
     """
     def __init__(self, item_dict: dict):
         self.__name = item_dict.get('name')
-        self.__is_mandatory = item_dict.get('is_mandatory')
+        self.__is_mandatory = item_dict.get('is_mandatory') == True
         self.__prompt = item_dict.get('prompt')
 
     @property
@@ -53,6 +53,13 @@ class NumericSchemaItem(SchemaItem):
 class StringSchemaItem(SchemaItem):
     def __init__(self, item_dict: dict):
         super().__init__(item_dict)
+        self.__pattern = None
+        if item_dict.get('pattern'):
+            self.__pattern = item_dict.get('pattern')
+
+    @property
+    def pattern(self) -> str:
+        return self.__pattern
 
 
 class ArraySchemaItem(SchemaItem):

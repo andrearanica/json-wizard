@@ -41,10 +41,7 @@ def print_wizard_success(message: str) -> None:
     print(f'{TerminalColors.BOLD}{TerminalColors.OKGREEN}{message}{TerminalColors.ENDC}')
 
 def get_wizard_input(message: str) -> str:
-    try:
-        value = input(f'- {TerminalColors.OKBLUE}{message}{TerminalColors.ENDC}: ')
-    except Exception:
-        return None
+    value = input(f'- {TerminalColors.OKCYAN}{message}{TerminalColors.ENDC}: ')
     return value
 
 def print_wizard_warning(message: str) -> None:
