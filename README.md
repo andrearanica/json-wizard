@@ -70,6 +70,8 @@ This is an example of a configuration JSON.
 }
 ```
 
+After following the wizard, this can be a valid output written by the script.
+
 ``` json
 {
     "schoolName": "ITIS Paleocapa",
